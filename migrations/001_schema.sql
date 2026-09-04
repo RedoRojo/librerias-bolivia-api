@@ -7,6 +7,13 @@
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
+-- Wrapper inmutable para unaccent (requerido por PostgreSQL para poder crear índices GIN basados en funciones)
+CREATE OR REPLACE FUNCTION f_unaccent(text)
+  RETURNS text AS
+$func$
+SELECT public.unaccent('public.unaccent', $1)
+$func$ LANGUAGE sql IMMUTABLE PARALLEL SAFE STRICT;
+
 -- 2. Tabla de Tiendas y Librerías
 CREATE TABLE IF NOT EXISTS stores (
     store_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -36,7 +43,7 @@ CREATE TABLE IF NOT EXISTS publishers (
 
 -- Índice GIN para búsqueda difusa en nombres de editoriales
 CREATE INDEX IF NOT EXISTS idx_publishers_name_trgm 
-    ON publishers USING gin (lower(unaccent(name)) gin_trgm_ops);
+    ON publishers USING gin (f_unaccent(lower(name)) gin_trgm_ops);
 
 -- 4. Tabla Canónica de Libros
 CREATE TABLE IF NOT EXISTS books (
@@ -61,9 +68,9 @@ CREATE TABLE IF NOT EXISTS books (
 CREATE INDEX IF NOT EXISTS idx_books_isbn ON books (isbn) WHERE isbn IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_books_publisher_id ON books (publisher_id);
 CREATE INDEX IF NOT EXISTS idx_books_title_trgm 
-    ON books USING gin (lower(unaccent(title)) gin_trgm_ops);
+    ON books USING gin (f_unaccent(lower(title)) gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_books_author_trgm 
-    ON books USING gin (lower(unaccent(author)) gin_trgm_ops);
+    ON books USING gin (f_unaccent(lower(author)) gin_trgm_ops);
 
 -- 5. Tabla de Ofertas de Libros por Tienda (Book Offers)
 CREATE TABLE IF NOT EXISTS book_offers (
