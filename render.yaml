@@ -3,12 +3,12 @@ services:
     name: api-librerias-bolivia
     runtime: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
       - key: PYTHONPATH
-        value: /opt/render/project/src/backend
+        value: /opt/render/project/src
       - key: DATABASE_URL
         sync: false # Configurar en el panel de Render con tu URL de Supabase o PostgreSQL
       - key: USE_SQLITE_FALLBACK

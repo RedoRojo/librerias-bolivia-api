@@ -15,7 +15,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copiar el código del backend
-COPY backend/ .
+COPY app/ app/
+COPY migrations/ migrations/
+COPY main.py .
+COPY view_db.py .
 
 # Variable de entorno para que Python reconozca los módulos internos
 ENV PYTHONPATH=/app

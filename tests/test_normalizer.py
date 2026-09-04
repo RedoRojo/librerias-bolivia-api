@@ -1,5 +1,9 @@
 import os
 import sys
+
+# Asegurar que la raíz del proyecto esté en sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from decimal import Decimal
 from app.core.database import SessionLocal
 from app.models.store import Store

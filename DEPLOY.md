@@ -15,8 +15,8 @@ Para desplegar este proyecto 100% gratis utilizaremos:
    - Región: Selecciona la más cercana (ej: `South America (São Paulo)` o `US East`).
 3. Una vez creado el proyecto:
    - Ve a la pestaña **SQL Editor** (a la izquierda).
-   - Abre el archivo [`backend/migrations/001_schema.sql`](backend/migrations/001_schema.sql), copia todo su contenido, pégalo en el editor de Supabase y haz clic en **Run**.
-   - Haz lo mismo con el archivo [`backend/migrations/002_seed_stores.sql`](backend/migrations/002_seed_stores.sql) y haz clic en **Run**.
+   - Abre el archivo [`migrations/001_schema.sql`](migrations/001_schema.sql), copia todo su contenido, pégalo en el editor de Supabase y haz clic en **Run**.
+   - Haz lo mismo con el archivo [`migrations/002_seed_stores.sql`](migrations/002_seed_stores.sql) y haz clic en **Run**.
    - *¡Listo! Tu base de datos PostgreSQL ya tiene las extensiones pg_trgm, unaccent, tablas e índices listos.*
 4. Obtén tu URL de conexión:
    - Ve a **Project Settings** (ícono de engranaje) $\rightarrow$ **Database**.
@@ -26,50 +26,23 @@ Para desplegar este proyecto 100% gratis utilizaremos:
 
 ---
 
-## 🌐 PASO 2: Subir el Proyecto a GitHub
-
-1. En tu máquina local, inicializa git y sube los cambios a tu cuenta de GitHub:
-   ```bash
-   cd /home/redo/Documents/libros/buscador_librerias_bolivia
-   git init
-   git add .
-   git commit -m "feat: backend FastAPI con scrapers y postgresql"
-   ```
-2. Crea un repositorio en GitHub (ej: `buscador-librerias-bolivia`) y conéctalo:
-   ```bash
-   git remote add origin https://github.com/TU_USUARIO/buscador-librerias-bolivia.git
-   git branch -M main
-   git push -u origin main
-   ```
-
----
-
-## ⚡ PASO 3: Desplegar el Backend en Render.com (Gratis)
+## ⚡ PASO 2: Desplegar el Backend en Render.com (Gratis)
 
 1. Ve a [render.com](https://render.com/) e inicia sesión con tu GitHub.
 2. Haz clic en **New +** $\rightarrow$ **Web Service**.
-3. Selecciona tu repositorio `buscador-librerias-bolivia`.
+3. Selecciona tu repositorio `librerias-bolivia-api`.
 4. Completa la configuración:
-   - **Name**: `api-librerias-bolivia`
+   - **Name**: `librerias-bolivia-api`
    - **Language**: `Python 3`
    - **Region**: La misma de tu Supabase (ej: `US East` o `Frankfurt`).
    - **Branch**: `main`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
    - **Instance Type**: `Free`
 5. En la sección **Environment Variables**, añade:
-   - `PYTHONPATH` = `backend`
    - `DATABASE_URL` = *(Pega aquí la URI de Supabase del Paso 1)*
    - `USE_SQLITE_FALLBACK` = `false`
 6. Haz clic en **Create Web Service**.
 
 En 2 minutos Render compilará el contenedor y te entregará una URL pública con HTTPS activo:
-👉 `https://api-librerias-bolivia.onrender.com/docs`
-
----
-
-## 🔁 ¿Y cómo corren los Scrapers en Producción?
-
-Una vez desplegado:
-1. Puedes ejecutar los scrapers desde tu máquina apuntando temporalmente al `DATABASE_URL` de Supabase para llenar miles de libros directamente a la nube.
-2. O en Render, puedes configurar un **Cron Job** gratuito que ejecute `python backend/app/scrapers/runner.py --all` una vez al día.
+👉 `https://librerias-bolivia-api.onrender.com/docs`

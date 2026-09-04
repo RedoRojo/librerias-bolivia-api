@@ -1,5 +1,10 @@
-import argparse
+import os
 import sys
+
+# Asegurar que la raíz del proyecto esté en sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+import argparse
 from typing import Optional
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal

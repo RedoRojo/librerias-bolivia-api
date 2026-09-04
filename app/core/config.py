@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # Fallback local a SQLite para desarrollo sin servidor PostgreSQL activo
     USE_SQLITE_FALLBACK: bool = os.getenv("USE_SQLITE_FALLBACK", "true").lower() in ("true", "1", "yes")
-    SQLITE_LOCAL_PATH: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../data/local_books.db")
+    SQLITE_LOCAL_PATH: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../data/local_books.db")
     
     # Configuración de crawlers
     CRAWLER_USER_AGENT: str = "LibreriasBoliviaBot/1.0 (+https://librerias-bolivia.com/bot; contacto@librerias-bolivia.com)"
