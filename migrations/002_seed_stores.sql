@@ -17,7 +17,8 @@ VALUES
     ('Vínculos', 'vinculos', 'La Paz', 'https://vinculos.com.bo/', 'woocommerce', false, NULL),
     ('El Bagallero Ilustrado', 'el-bagallero-ilustrado', 'Tarija / Envíos Nacionales', 'https://bagalleroilustrado.com/', 'shopify', false, NULL),
     ('Librería D&C', 'libreria-dc', 'Envíos Nacionales', 'https://libreriadc.com.bo/', 'woocommerce', false, NULL),
-    ('Librerías Don Bosco', 'librerias-don-bosco', 'La Paz / Sucre', 'https://www.libreriasdonbosco.com/', 'woocommerce', false, NULL)
+    ('Librerías Don Bosco', 'librerias-don-bosco', 'La Paz / Sucre', 'https://www.libreriasdonbosco.com/', 'woocommerce', false, NULL),
+    ('Librería Yachaywasi', 'libreria-yachaywasi', 'La Paz / Cochabamba', 'https://libreriayachaywasi.com/', 'shopify', false, NULL)
 ON CONFLICT (slug) DO UPDATE 
 SET 
     website_url = EXCLUDED.website_url,

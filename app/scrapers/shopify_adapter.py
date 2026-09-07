@@ -47,21 +47,63 @@ class ShopifyAdapter(BaseScraper):
                         soup = BeautifulSoup(raw_body, "html.parser")
                         synopsis = soup.get_text(separator=" ", strip=True)[:1500]
 
-                    # En Shopify, vendor suele ser la editorial o el autor
+                    # Extraer ISBN del SKU o barcode
+                    isbn = raw_sku if raw_sku and len(str(raw_sku).replace('-', '')) in (10, 13) else None
+                    if not isbn:
+                        isbn_re = re.compile(r'(97[89]\d{10})')
+                        for img in images:
+                            m = isbn_re.search(img.get("src", ""))
+                            if m:
+                                isbn = m.group(1)
+                                break
+                        if not isbn and raw_body:
+                            m = isbn_re.search(raw_body)
+                            if m:
+                                isbn = m.group(1)
+
+                    # En Shopify, vendor suele ser la editorial
                     vendor = p.get("vendor")
-                    product_type = p.get("product_type")
+                    publisher = vendor if vendor and vendor.lower() not in (self.store_name.lower(), "generico", "default") else None
+
+                    # Limpieza de título y autor (manejo de formatos como 'TITULO | AUTOR')
+                    raw_title = html.unescape(p.get("title", "")).strip()
+                    title = raw_title
+                    author = None
+
+                    if "|" in raw_title:
+                        parts = raw_title.split("|", 1)
+                        title = parts[0].strip()
+                        author_part = parts[1].strip()
+                        if author_part and author_part.lower() not in ("varios", "varios autores", "diversos", "n/a"):
+                            author = author_part.title()
+
+                    # Limpiar sufijos promocionales de título (ej: '. REBAJA 40 BS')
+                    title = re.sub(r'\s*\.?\s*REBAJA\s*\d+\s*BS\.?', '', title, flags=re.IGNORECASE).strip()
+
+                    # Si el autor o editorial están en body_html con formato estructurado
+                    if raw_body and (not author or not publisher):
+                        if not author:
+                            m_auth = re.search(r'AUTOR:\s*([^-\n<]+)', raw_body, re.IGNORECASE)
+                            if m_auth:
+                                auth_text = m_auth.group(1).strip()
+                                if auth_text.lower() not in ("varios", "varios autores"):
+                                    author = auth_text.title()
+                        if not publisher:
+                            m_pub = re.search(r'EDITORIAL:\s*([^-\n<]+)', raw_body, re.IGNORECASE)
+                            if m_pub:
+                                publisher = m_pub.group(1).strip().title()
 
                     item = {
-                        "title": html.unescape(p.get("title", "")),
-                        "author": None,  # Se resolverá por normalizer o vendor
-                        "publisher": vendor if vendor and vendor.lower() not in (self.store_name.lower(), "generico") else None,
+                        "title": title,
+                        "author": author,
+                        "publisher": publisher,
                         "price": price,
                         "is_in_stock": is_in_stock,
                         "stock_label": "En stock" if is_in_stock else "Agotado",
                         "product_url": f"{self.base_url}/products/{p.get('handle')}",
                         "cover_image_url": cover_image_url,
                         "synopsis": synopsis,
-                        "isbn": raw_sku if raw_sku and len(str(raw_sku).replace('-', '')) in (10, 13) else None,
+                        "isbn": str(isbn) if isbn else None,
                         "raw_sku": str(raw_sku) if raw_sku else None
                     }
 
